@@ -11,7 +11,7 @@ exports.storage = multer.diskStorage({
 });
 
 exports.fileFilter = (req, file, cb) => {
-  if (file.mimetype == "music/mp3") {
+  if (file.mimetype === "music/mp3" || file.mimetype==="music/mpeg") {
     cb(null, true);
   } else {
     cb("تنها پسوند mp3 پشتیبانی میشود", false);

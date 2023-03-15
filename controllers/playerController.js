@@ -1,13 +1,17 @@
-const multer = require("multer");
-const path = require("path");
-const shortId = require("shortid");
+const appRoot = require("app-root-path");
 
 const songs = require("../models/songs");
-const { fileFilter, storage } = require("../utils/multer");
 
 exports.getAllSongs = async (req, res) => {
   const data = await songs.find({});
   res.json(data);
+};
+
+exports.getIndexPage = (req, res) => {
+  res.render("index", {
+    pageTitle: "Music Player",
+    path: "/",
+  });
 };
 
 exports.getUploadMusicPage = (req, res) => {
@@ -17,41 +21,24 @@ exports.getUploadMusicPage = (req, res) => {
   });
 };
 
+exports.uploadSong = async (req, res) => {
+  const path = req.files ? req.files.path : {};
+  const fileName = `${path.name}`;
+  const uploadPath = `${appRoot}/public/uploads/${fileName}`;
 
-exports.UploadSong = (req, res,next) => {
-
-  const upload = multer({ 
-    limits: { fileSize: 5*1024*1024 },
-    // dest: "public/uploads/",
-    storage: storage,
-    // fileFilter
-  }).single("music");
-
-  upload(req, res, (err) => {
-    if (err) {
-      return res.status(400).send(err);
-    } else {
-      if (req.file) {
-        const file = req.file;
-        const filePath = path.join(
-          __dirname,
-          "public",
-          "uploads",
-          `${file.originalname}`
-        );
-      } else {
-        res.send("you should choose a file for upload");
-      }
-    }
-  });
-  next()
-};
-
-exports.createInDB=async(req,res)=>{
   try {
-    console.log(req.body);
+    req.body = { ...req.body, path };
+
+    await songs.songValidation(req.body);
+
+    await path.mv(uploadPath, (err) => {
+      if (err) return res.status(500).send(err);
+    });
+
+    await songs.create({ ...req.body, path: fileName });
     res.redirect("/")
-  } catch (err) {
-    console.log(err);
+
+  } catch (error) {
+    console.log(error);
   }
-}
+};

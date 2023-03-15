@@ -12,7 +12,8 @@
     <title><%=pageTitle %></title>
   </head>
   <body>
-    <br /><br /><br />    
+    <br /><br /><br />  
+
     <h3 class="mt-2 text-center">Upload New Music</h3>
     <br /><br />
     <div class="d-flex align-items-center justify-content-center">
@@ -21,6 +22,7 @@
         class="w-50"
         method="POST"
         id="form"
+        enctype="multipart/form-data"
         >
         <div class="form-group">
           <label for="name">Music Name: </label>
@@ -47,14 +49,7 @@
         <br />
 
         <div class="mb-3">
-          <button
-            class="btn btn-sm btn-outline-secondary"
-            type="button"
-            id="musicUpload"
-          >
-            upload music
-          </button>
-          <input class="form-control" type="file" id="selectedMusic" />
+          <input class="form-control" type="file" id="selectedMusic" name="path" />
           <label for="selectedMusic" id="musicStatus" class="custom-file-label">
             choose your music ...
           </label>
@@ -64,12 +59,12 @@
           <input
             type="submit"
             value="Add :)"
+            id="addToDB"
             class="btn btn-success m-2 btn btn-primary"
             />
           <a href="/" class="btn btn-warning m-2 btn btn-primary">Cansel</a>
         </div>
       </form>
     </div>
-    <script src="/js/upload.js"></script>
   </body>
 </html>

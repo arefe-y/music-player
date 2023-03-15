@@ -12,13 +12,18 @@ let volume_slider = document.querySelector(".volume_slider");
 let curr_time = document.querySelector(".current-time");
 let total_duration = document.querySelector(".total-duration");
 
+let songListUl = document.querySelector(".song-list");
+
 let track_index = 0;
 let isPlaying = false;
 let updateTimer;
+let index = 0;
 
 let curr_track = document.createElement("audio");
 
 let track_list = [];
+let pathMusic = "http://127.0.0.1:3000/uploads/";
+let trackName;
 
 async function getData() {
   await fetch("/gettracks", { method: "GET" })
@@ -31,36 +36,39 @@ async function getData() {
     });
 }
 
-function random_bg_color() {
-  // Get a number between 64 to 256 (for getting lighter colors)
-  let red = Math.floor(Math.random() * 256) + 64;
-  let green = Math.floor(Math.random() * 256) + 64;
-  let blue = Math.floor(Math.random() * 256) + 64;
-
-  // Construct a color withe the given values
-  let bgColor = "rgb(" + red + "," + green + "," + blue + ")";
-
-  // Set the background to that color
-  document.body.style.background = bgColor;
+function showSongs(array) {
+  for (let i = 0; i < array.length; i++) {
+    let li = document.createElement("li");
+    li.setAttribute("data-index", i);
+    songListUl.appendChild(li);
+    li.appendChild(document.createTextNode(array[i].name));
+  }
 }
+showSongs(track_list);
 
 async function loadTrack(track_index) {
   await getData();
+
+  while (index == 0) {
+    showSongs(track_list);
+    index++;
+  }
+
   clearInterval(updateTimer);
   resetValues();
-  curr_track.src = track_list[track_index].path;
+  trackName = track_list[track_index].path;
+  curr_track.src = `${pathMusic}${trackName}`;
+  console.log(curr_track.src);
   curr_track.load();
 
   track_art.style.backgroundImage =
     "url(" + track_list[track_index].image + ")";
   track_name.textContent = track_list[track_index].name;
   track_artist.textContent = track_list[track_index].artist;
-  now_playing.textContent =
-    "PLAYING " + (track_index + 1) + " OF " + track_list.length;
+
 
   updateTimer = setInterval(seekUpdate, 1000);
   curr_track.addEventListener("ended", nextTrack);
-  random_bg_color();
 }
 
 loadTrack(track_index);
@@ -70,7 +78,6 @@ function resetValues() {
   total_duration.textContent = "00:00";
   seek_slider.value = 0;
 }
-
 
 function playpauseTrack() {
   if (!isPlaying) playTrack();
@@ -146,3 +153,13 @@ function seekUpdate() {
     total_duration.textContent = durationMinutes + ":" + durationSeconds;
   }
 }
+
+songListUl.addEventListener(
+  "click",
+  function (e) {
+    track_index = e.target.closest("li").getAttribute("data-index");
+    loadTrack(track_index);
+    playTrack();
+  },
+  false
+);

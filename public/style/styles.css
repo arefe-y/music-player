@@ -9,8 +9,7 @@
 
 body {
   font-family: "BYekan" !important;
+  background: #011a1b;
 }
 
-/* .custom-file-input ~ .custom-file-label::after {
-  content: "انتخاب عکس" !important;
-} */
+

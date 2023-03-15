@@ -1,5 +1,6 @@
 const express = require("express");
 const fs = require("fs");
+const fileUpload=require('express-fileupload');
 const path = require("path");
 const dotEnv = require("dotenv");
 const expressLayout = require("express-ejs-layouts");
@@ -29,6 +30,8 @@ app.use(
     optionsSuccessStatus: 204,
   })
 );
+// File Upload Middleware
+app.use(fileUpload())
 
 //Static Folder
 app.use(express.static(path.join(__dirname, "public")));
